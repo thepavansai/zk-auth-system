@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import init, { generate_proof, verify_proof } from './pkg/zk_wasm.js';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    useEffect(() => {
+        const initializeWasm = async () => {
+            await init();
+        };
+        initializeWasm();
+    }, []);
+
     const handleLogin = async (e) => {
         e.preventDefault();
-        await init();
         const storedHash = localStorage.getItem(username);
 
         if (storedHash) {
-            const proof = await generate_proof(username, password);
-            const isValid = verify_proof(proof, storedHash);
+            const proof = generate_proof(username, password);
+            console.log("Proof:", proof);
+            console.log("Stored Hash:", storedHash);
+            console.log("Username:", username);
+
+            const isValid = verify_proof(proof, [storedHash], username);
             alert(isValid ? 'Login successful!' : 'Login failed!');
         } else {
             alert('User not found!');
