@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import init, { generate_proof, verify_proof } from './pkg/zk_wasm.js';
+import './App.css';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -17,12 +18,8 @@ const Login = () => {
         const storedHash = localStorage.getItem(username);
 
         if (storedHash) {
-            const proof = generate_proof(username, password);
-            console.log("Proof:", proof);
-            console.log("Stored Hash:", storedHash);
-            console.log("Username:", username);
-
-            const isValid = verify_proof(proof, [storedHash], username);
+            const proof = await generate_proof(username, password);
+            const isValid = verify_proof(proof, storedHash.split(','), username);
             alert(isValid ? 'Login successful!' : 'Login failed!');
         } else {
             alert('User not found!');

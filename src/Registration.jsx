@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import init, { get_pass_hash } from './pkg/zk_wasm.js';
+import './App.css';
 
 const Registration = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    useEffect(() => {
+        const initializeWasm = async () => {
+            await init();
+        };
+        initializeWasm();
+    }, []);
+
     const handleRegister = async (e) => {
         e.preventDefault();
-        await init(); 
         const hashedPassword = get_pass_hash(password);
-        localStorage.setItem(username, hashedPassword);
+        localStorage.setItem(username, hashedPassword.join(',')); // Store as comma-separated string
         alert('Registration successful!');
     };
 
